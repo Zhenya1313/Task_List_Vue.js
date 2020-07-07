@@ -1,27 +1,37 @@
 var app = new Vue ({
     el: '#app',
     data:{
-        title: "Tasl list",
-        items:[
-            {text: "First"},
-            {text: "Second"},
-            {text: "First"},
-            {text: "Second"},
-        ]
+        title: "Task list",
+        items:[ ]
     },
-    methods:{
-        addItem: function (){
-            var input = document.getElementById('itemForm');
 
-            if (input.value !== ''){
-                this.items.push({
-                    text:input.value
-                })
-                input.value="";
+    mounted() {
+        if (localStorage.getItem('items')) {
+            try {
+                this.items = JSON.parse(localStorage.getItem('items'));
+            } catch(e) {
+                localStorage.deleteItem('items');
             }
+        }
+    },
+
+    methods: {
+        addItem() {
+            if (!this.newItem) {
+                return;
+            }
+
+            this.items.push(this.newItem);
+            this.newItem = '';
+            this.saveItems();
         },
-        deleteItem: function(index){
-            this.items.splice(index,1);
+        deleteItem(x) {
+            this.items.splice(x, 1);
+            this.saveItems();
+        },
+        saveItems() {
+            const parsed = JSON.stringify(this.items);
+            localStorage.setItem('items', parsed);
         }
     }
 });
